@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Critical Thinking Coach</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        #scenario { background-color: #e0f7fa; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        textarea { width: 100%; height: 150px; padding: 10px; border: 1px solid #ccc; border-radius: 4px; resize: vertical; }
+        button { padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+        #feedback { margin-top: 20px; padding: 15px; border-radius: 8px; border: 1px solid #ddd; display: none; } /* Hidden initially */
+        .passed { background-color: #d4edda; color: #155724; border-color: #c3e6cb; }
+        .failed { background-color: #f8d7da; color: #721c24; border-color: #f5c6cb; }
+    </style>
+</head>
+<body>
+    <h1>Critical Thinking Assessment</h1>
+
+    <div id="scenario">
+        <h2>Scenario: Dynamic Risk Assessment</h2>
+        <p>You are on night patrol at a corporate office building. The building is largely empty. Suddenly, the fire alarm system activates on the 5th floor. Almost immediately, you observe an unfamiliar individual, not wearing a security badge, quickly attempting to exit through a fire door on the ground floor, glancing back nervously.</p>
+    </div>
+
+    <p><strong>Describe your immediate actions and explain the reasoning behind your top three priorities in this situation.</strong></p>
+    <textarea id="learnerResponse" placeholder="Type your response here..."></textarea>
+    <br><br>
+    <button id="submitResponse">Submit to AI Coach</button>
+
+    <div id="feedback" style="display:none;">
+        <h3>AI Coach Feedback:</h3>
+        <p id="aiFeedbackText"></p>
+        <button id="sendResultToStoryline" style="display:none;">Send Result to Course</button>
+    </div>
+
+    <script>
+        document.getElementById('submitResponse').addEventListener('click', function() {
+    const learnerResponse = document.getElementById('learnerResponse').value;
+    const aiFeedbackText = document.getElementById('aiFeedbackText');
+    const feedbackDiv = document.getElementById('feedback');
+    const sendResultButton = document.getElementById('sendResultToStoryline');
+
+    // --- SIMULATED AI ANALYSIS ---
+    // In a real scenario, this would involve sending the learnerResponse
+    // to a backend AI model (e.g., via fetch() API call) and receiving a structured response.
+    // For now, we'll simulate a pass/fail based on a simple keyword check.
+
+    let assessmentResult;
+    let feedbackMessage;
+
+    // Simple simulation: Pass if "fire alarm" AND "suspicious individual" are mentioned.
+    // This is where your actual AI logic would determine pass/fail.
+    if (learnerResponse.toLowerCase().includes("fire alarm") &&
+        learnerResponse.toLowerCase().includes("suspicious individual") &&
+        learnerResponse.toLowerCase().includes("priorities")) {
+        assessmentResult = "AI_PASSED";
+        feedbackMessage = "Excellent! Your response demonstrates a strong understanding of prioritisation and identifying multiple threats in this scenario. You correctly addressed both the fire alarm and the suspicious individual, outlining clear priorities. Keep up the great work!";
+        feedbackDiv.className = 'passed'; // Apply green styling
+    } else {
+        assessmentResult = "AI_FAILED";
+        feedbackMessage = "Good attempt, but let's refine your approach. While you addressed some aspects, consider elaborating on your immediate actions and clearly outlining your top three priorities, explicitly mentioning how you would handle both the fire alarm and the suspicious individual. Re-evaluate your response and try again.";
+        feedbackDiv.className = 'failed'; // Apply red styling
+    }
+
+    aiFeedbackText.textContent = feedbackMessage;
+    feedbackDiv.style.display = 'block'; // Show the feedback section
+    sendResultButton.style.display = 'block'; // Show the button to send result to Storyline
+    sendResultButton.textContent = `Send ${assessmentResult === "AI_PASSED" ? "Pass" : "Fail"} to Course`;
+
+    // Store the result temporarily for the next step
+    sendResultButton.dataset.result = assessmentResult;
+});
+
+document.getElementById('sendResultToStoryline').addEventListener('click', function() {
+    const resultToSend = this.dataset.result; // Get the stored result
+
+    if (window.parent) {
+        // Send the message to the parent window (Storyline)
+        // IMPORTANT: For production, replace "http://your-storyline-origin.com"
+        // with the actual domain where your Storyline content will be hosted.
+        // For local testing or if hosted on a common platform, "*" is often used,
+        // but is less secure. Use the exact origin if known for better security.
+        window.parent.postMessage(resultToSend, "*"); // "*" means any origin is accepted for now
+        console.log(`Message "${resultToSend}" sent to parent (Storyline).`);
+        alert(`Result "${resultToSend}" sent to Storyline! You can now close this window/tab.`); // User feedback
+    } else {
+        console.warn("No parent window found. Are you running this outside Storyline?");
+        alert("No parent window found. This bot is designed to run within Storyline.");
+    }
+});
+    </script>
+</body>
+</html>
